@@ -222,9 +222,27 @@ const Expenses = () => {
 
 
 
-      <Typography variant="h6" sx={{ marginTop: 2 }}>
-        Total Expenses: ₹{total}
-      </Typography>
+<Typography variant="h6" sx={{ marginTop: 2 }}>
+  Total Expenses: 
+  <Box
+    component="span"
+    sx={{
+      backgroundColor: 'blue',
+      color: 'white',
+      fontWeight: 'bold',
+      padding: '4px 8px',
+      borderRadius: '4px',
+      display: 'inline-block',
+      marginLeft: 1,
+      fontSize: '1.25rem',
+      letterSpacing: '0.5px',
+      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
+    }}
+  >
+    ₹{total}
+  </Box>
+</Typography>
+
     </Box>
 
   );

@@ -36,7 +36,13 @@ const Search = () => {
 
                     {localQuery ? ( 
                         filteredExpenses.length > 0 ? (
-                            filteredExpenses.map((expense) => (
+
+                            filteredExpenses.filter((expense)=>{
+                                if(localQuery.trim().split(' ').length === 1){
+                                    return expense.name.toLowerCase().startsWith(localQuery.trim().toLowerCase());
+                                }
+                                return expense.name.toLowerCase().includes(localQuery.trim().toLowerCase());
+                            }).map((expense) => (
                                 <li key={expense.name}>
                                     {expense.name} - ₹{expense.amount}
                                 </li>
