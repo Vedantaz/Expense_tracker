@@ -1,0 +1,60 @@
+     {/* {Object.keys(groupedExpenses).map((groupDate) => (
+        <Box key={groupDate} sx={{ marginBottom: 2 }}>
+          <Typography variant="h6" sx={{ marginBottom: 1 }}>
+            {format(new Date(groupDate), 'dd MMM, yyyy')}
+          </Typography>
+          <List>
+            {groupedExpenses[groupDate].map((expense) => (
+              <ListItem key={expense.originalIndex} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <ListItemText
+                  primary={expense.name}
+                  secondary={`₹${expense.amount} (Last updated: ${format(new Date(expense.date), 'dd MMM, yyyy')})`}
+                />
+                <Stack direction="row" spacing={1}>
+                  <IconButton onClick={() => handleEditExpense(expense.originalIndex)} color="primary">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton onClick={() => handleRemoveExpense(expense.originalIndex)} color="error">
+                    <DeleteIcon />
+                  </IconButton>
+                </Stack>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      ))}
+
+      {editIndex !== null && (
+        <Box sx={{ marginBottom: 2 }}>
+          <TextField
+            label="Edit Expense Name"
+            value={editExpenseName}
+            onChange={(e) => setEditExpenseName(e.target.value)}
+            fullWidth
+            sx={{ marginBottom: 1 }}
+          />
+          <TextField
+            label="Edit Amount"
+            type="number"
+            value={editAmount}
+            onChange={(e) => setEditAmount(e.target.value)}
+            fullWidth
+            sx={{ marginBottom: 1 }}
+          />
+          <TextField
+            label="Edit Date"
+            type="date"
+            value={format(date, 'yyyy-MM-dd')}
+            onChange={(e) => setDate(new Date(e.target.value))}
+            fullWidth
+            sx={{ marginBottom: 1 }}
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleUpdateExpense}
+          >
+            Update Expense
+          </Button>
+        </Box>
+      )} */}

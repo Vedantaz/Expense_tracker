@@ -8,10 +8,16 @@ const totalE = (expenses) => {
     localStorage.setItem( 'expenses', JSON.stringify(expenses));
 }
 
-const loadExpenses = ()=>{
-    const expenses = localStorage.getItem('expenses');
-    return expenses ? JSON.parse(expenses) : [];
-}
+const loadExpenses = () => {
+  const expenses = localStorage.getItem('expenses');
+  return expenses
+    ? JSON.parse(expenses).map((expense) => ({
+        ...expense,
+        category: expense.category || 'Uncategorized', // Default category if missing
+        ratio : expense.ratio || 0,
+      }))
+    : [];
+};
 
 const initialState = {
     expenses : loadExpenses(),
@@ -24,12 +30,16 @@ const expenseSlice = createSlice({
     reducers: {
         addExpense:(state, action)=>{
 
-            const {name,amount, date} = action.payload;
+          const {name,amount, date, category, ratio, amountMax} = action.payload;
+          
+          const calculatedRatio = ratio || (amountMax ? (parseFloat(amount) / parseFloat(amountMax)) * 100 : 0);
 
             const newExpense = {
               name,
               amount,
               date: date || new Date().toISOString(),
+              category : category || 'Uncategorized',
+              ratio : calculatedRatio.toFixed(2),
             };
       
             const existingExpense = state.expenses.find(expense => expense.name === name);
@@ -40,12 +50,11 @@ const expenseSlice = createSlice({
                 state.expenses.push(newExpense);
             }
            
-            // state.total += action.payload.amount;
             saveExpenses(state.expenses);
             state.total = totalE(state.expenses);
         },
-        removeExpense:(state, action)=>{
 
+        removeExpense:(state, action)=>{
             const index = action.payload;
             const expenseToRemove = state.expenses[index];
             if(expenseToRemove){
@@ -57,7 +66,7 @@ const expenseSlice = createSlice({
         },
         updateExpense:(state, action) =>{
             
-            const {index, updatedExpense, operation} = action.payload; 
+            const {index, updatedExpense, operation, amountMax} = action.payload; 
             const currentExpense = state.expenses[index];
             let diff = 0;
 
@@ -80,8 +89,8 @@ const expenseSlice = createSlice({
                   diff = updatedExpense.amount - currentExpense.amount;
                   break;
               }
-
-            state.expenses[index] = updatedExpense;
+              const recalculatedRatio = amountMax ? (updatedExpense.amount / amountMax) * 100 : 0;
+            state.expenses[index] = {...updatedExpense, ratio: recalculatedRatio.toFixed(2)};
             state.total = totalE(state.expenses);
 
         },
@@ -90,7 +99,6 @@ const expenseSlice = createSlice({
         }
     }
 });
-
 
 export const {calculateTotal, updateExpense, addExpense, removeExpense} = expenseSlice.actions;
 export default expenseSlice.reducer;
