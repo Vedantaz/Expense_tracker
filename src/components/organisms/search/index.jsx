@@ -32,19 +32,7 @@ const Search = () => {
                 />
             </div>
             <div>
-                {/* <h3>Filtered Expenses:</h3> */}
                 <ul>
-                    {/* {filteredExpenses.length > 0 ? (
-                        searchQuery ? ( 
-                            filteredExpenses.map((expense) => (
-                                <li key={expense.name}>{expense.name} - ₹{expense.amount}</li>
-                            ))
-                        ) : (
-                            <p>Search for expenses...</p> 
-                        )
-                    ) : (
-                        <p>No expenses found</p> 
-                    )} */}
 
                     {localQuery ? ( 
                         filteredExpenses.length > 0 ? (

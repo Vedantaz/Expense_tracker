@@ -39,7 +39,7 @@ const Expenses = () => {
     setEditIndex(index);
     setEditExpenseName(expenses[index].name);
     setEditAmount(expenses[index].amount);
-    setDate(new Date(expenses[index].date));
+    setDate(new Date(expenses[index].date));  
   };
 
   const handleUpdateExpense = () => {
