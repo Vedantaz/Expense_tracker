@@ -16,7 +16,6 @@ const loadExpenses = ()=>{
 const initialState = {
     expenses : loadExpenses(),
     total:totalE(loadExpenses()),
-    date: new Date(),
 }
 
 const expenseSlice = createSlice({
@@ -30,7 +29,7 @@ const expenseSlice = createSlice({
             const newExpense = {
               name,
               amount,
-              date: new Date().toISOString(),
+              date: date || new Date().toISOString(),
             };
       
             const existingExpense = state.expenses.find(expense => expense.name === name);
@@ -83,7 +82,7 @@ const expenseSlice = createSlice({
               }
 
             state.expenses[index] = updatedExpense;
-           state.total = totalE(state.expenses);
+            state.total = totalE(state.expenses);
 
         },
         calculateTotal : (state) =>{
