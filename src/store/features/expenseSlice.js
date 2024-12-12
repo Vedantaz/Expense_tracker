@@ -13,8 +13,8 @@ const loadExpenses = () => {
   return expenses
     ? JSON.parse(expenses).map((expense) => ({
         ...expense,
-        category: expense.category || 'Uncategorized', // Default category if missing
-        ratio : expense.ratio || 0,
+        category: expense.category || 'Uncategorized',
+        ratio : expense.ratio,
       }))
     : [];
 };
@@ -30,16 +30,15 @@ const expenseSlice = createSlice({
     reducers: {
         addExpense:(state, action)=>{
 
-          const {name,amount, date, category, ratio, amountMax} = action.payload;
+          const {name,amount, date, category} = action.payload;
           
-          const calculatedRatio = ratio || (amountMax ? (parseFloat(amount) / parseFloat(amountMax)) * 100 : 0);
+          // const calculatedRatio = ratio || (amountMax ? (parseFloat(amount) / parseFloat(amountMax)) * 100 : 0);
 
             const newExpense = {
               name,
               amount,
               date: date || new Date().toISOString(),
               category : category || 'Uncategorized',
-              ratio : calculatedRatio.toFixed(2),
             };
       
             const existingExpense = state.expenses.find(expense => expense.name === name);
@@ -89,8 +88,8 @@ const expenseSlice = createSlice({
                   diff = updatedExpense.amount - currentExpense.amount;
                   break;
               }
-              const recalculatedRatio = amountMax ? (updatedExpense.amount / amountMax) * 100 : 0;
-            state.expenses[index] = {...updatedExpense, ratio: recalculatedRatio.toFixed(2)};
+              // const recalculatedRatio = amountMax ? (updatedExpense.amount / amountMax) * 100 : 0;
+            state.expenses[index] = {...updatedExpense};
             state.total = totalE(state.expenses);
 
         },

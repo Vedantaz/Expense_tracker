@@ -25,21 +25,16 @@ const Expenses = () => {
 
   const handleAddExpense = () => {
 
-    if (!expenseName || !amount || !amountMax || !category) {
+    if (!expenseName || !amount || !category) {
       alert('Please fill all fields including Max Amount!');
       return;
     }
     const currentDate = new Date().toISOString();
-    
-    const ratio = (parseFloat(amount) / parseFloat(amountMax)) * 100;
-    if (parseFloat(amountMax) === 0) {
-      alert('Max Amount cannot be zero!');
-      return;
-    }
-    dispatch(addExpense({ name: expenseName, amount: parseFloat(amount), date: currentDate, category, ratio }));
+
+    // const ratio = (parseFloat(amount) / parseFloat(amountMax)) * 100;
+    dispatch(addExpense({ name: expenseName, amount: parseFloat(amount), date: currentDate, category }));
     setExpenseName('');
     setAmount('');
-    setAmountMax('');
     setCategory('');
 
   };
@@ -50,10 +45,13 @@ const Expenses = () => {
   };
 
   const handleEditExpense = (index) => {
+
     setEditIndex(index);
     setEditExpenseName(expenses[index].name);
     setEditAmount(expenses[index].amount);
     setDate(new Date(expenses[index].date));
+    setCategory(expenses[index].category);
+
   };
 
   const handleUpdateExpense = () => {
@@ -62,12 +60,16 @@ const Expenses = () => {
         name: editExpenseName,
         amount: parseFloat(editAmount),
         date: date.toISOString(),
+        category,
+
       };
+
       dispatch(updateExpense({ index: editIndex, updatedExpense }));
       setEditIndex(null);
       setEditExpenseName('');
       setEditAmount('');
       setDate(new Date());
+      setCategory('');
     }
   };
 
@@ -75,10 +77,19 @@ const Expenses = () => {
   const groupExpenses = (expenses) => {
     return expenses.reduce((acc, expense, originalIndex) => {
       const formattedDate = format(new Date(expense.date), 'dd MMM, yyyy');
+
+      // grouping by date
       if (!acc[formattedDate]) {
         acc[formattedDate] = [];
       }
-      acc[formattedDate].push({ ...expense, originalIndex });       // this is done to task reference to original Index of expenses array
+
+      // Group by category within each date group
+      if (!acc[formattedDate][expense.category]) {
+        acc[formattedDate][expense.category] = [];
+      }
+
+      acc[formattedDate][expense.category].push({ ...expense, originalIndex });  // this is done to task reference to original Index of expenses array  alogn with categorizing acc to the each date.
+      // acc[formattedDate].push({ ...expense, originalIndex });      
       return acc;
     }, {});
   }
@@ -126,17 +137,6 @@ const Expenses = () => {
         </RadioGroup>
       </FormControl>
 
-      {/* Amount range filter */}
-
-      <Stack direction="row" spacing={2} sx={{ marginBottom: 2 }}>
-
-        <TextField
-          label="Min amount" type="number" value={amountMin} onChange={(e) => { setAmountMin(e.target.value) }} />
-
-        <TextField
-          label="Max amount" type="number" value={amountMax} onChange={(e) => { setAmountMax(e.target.value) }} />
-      </Stack>
-
       <Button
         variant="contained"
         color="primary"
@@ -147,104 +147,128 @@ const Expenses = () => {
       </Button>
 
       {/* existing code  */}
+
       {Object.keys(groupedExpenses).map((groupDate) => (
         <Box key={groupDate} sx={{ marginBottom: 2 }}>
-          <Typography variant="h6" sx={{ marginBottom: 1 }}>
+          <Typography variant="h6" sx={{ 
+    marginBottom: 1, 
+    backgroundColor: '#f44336',
+    width: '100%',               
+    padding: '8px',        
+    boxSizing: 'border-box', borderRadius: '8px',  
+  }}>
             {format(new Date(groupDate), 'dd MMM, yyyy')}
           </Typography>
-          <List>
 
-            {groupedExpenses[groupDate].map((expense) => (
-              <React.Fragment key={expense.originalIndex}>
-                {editIndex === expense.originalIndex && (
-                  <Box sx={{ marginBottom: 2, padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-                    <TextField
-                      label="Edit Expense Name"
-                      value={editExpenseName}
-                      onChange={(e) => setEditExpenseName(e.target.value)}
-                      fullWidth
-                      sx={{ marginBottom: 1 }}
-                    />
-                    <TextField
-                      label="Edit Amount"
-                      type="number"
-                      value={editAmount}
-                      onChange={(e) => setEditAmount(e.target.value)}
-                      fullWidth
-                      sx={{ marginBottom: 1 }}
-                    />
-                    <TextField
-                      label="Edit Date"
-                      type="date"
-                      value={format(date, 'yyyy-MM-dd')}
-                      onChange={(e) => setDate(new Date(e.target.value))}
-                      fullWidth
-                      sx={{ marginBottom: 1 }}
-                    />
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={handleUpdateExpense}>
-                      Update Expense
-                    </Button>
-                  </Box>
-                )}
-                <ListItem sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <ListItemText
-                    primary={expense.category}
-                    secondary={`${expense.ratio}%`}
-                  />
-                  <ListItemText
-                    primary={expense.name}
-                    secondary={
-                      <>
-                        ₹{expense.amount}
-                        <br />
-                        (Last updated: {format(new Date(expense.date), 'dd MMM, yyyy')})
-                      </>
-                    }
+          {/* Iterate over categories within each date group */}
+          {Object.keys(groupedExpenses[groupDate]).map((category) => (
+            <Box key={category} sx={{ marginBottom: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
+                {category}
+              </Typography>
+              <List>
+                {groupedExpenses[groupDate][category].map((expense) => (
+                  <React.Fragment key={expense.originalIndex}>
+                    {editIndex === expense.originalIndex && (
 
-                  />
-                  <Stack direction="row" spacing={1}>
-                    <IconButton onClick={() => handleEditExpense(expense.originalIndex)} color="primary">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleRemoveExpense(expense.originalIndex)} color="error">
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-                </ListItem>
-              </React.Fragment>
-            ))}
-          </List>
+
+                      // edit box
+                      <Box sx={{ marginBottom: 2, padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                        <TextField
+                          label="Edit Expense Name"
+                          value={editExpenseName}
+                          onChange={(e) => setEditExpenseName(e.target.value)}
+                          fullWidth
+                          sx={{ marginBottom: 1 }}
+                        />
+                        <TextField
+                          label="Edit Amount"
+                          type="number"
+                          value={editAmount}
+                          onChange={(e) => setEditAmount(e.target.value)}
+                          fullWidth
+                          sx={{ marginBottom: 1 }}
+                        />
+                        <TextField
+                          label="Edit Date"
+                          type="date"
+                          value={format(date, 'yyyy-MM-dd')}
+                          onChange={(e) => setDate(new Date(e.target.value))}
+                          fullWidth
+                          sx={{ marginBottom: 1 }}
+                        />
+                        <Button variant="contained" color="secondary" onClick={handleUpdateExpense}>
+                          Update Expense
+                        </Button>
+                      </Box>
+                    )}
+
+                    <ListItem sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: 2,
+                      border: '2px solid #ddd', 
+                    }}>
+                      {/* Category Column */}
+                      <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
+                          {expense.category}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                          (Last updated : {format(new Date(expense.date), 'dd MMM, yyyy')})
+                        </Typography>
+                      </Box>
+
+                      {/* Value Column */}
+                      <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column'}}>
+                        <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
+                          {expense.name}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'gray' }}>
+                          ₹{expense.amount}
+                        </Typography>
+                      </Box>
+
+                      {/* Action Buttons Column */}
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton onClick={() => handleEditExpense(expense.originalIndex)} color="primary">
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleRemoveExpense(expense.originalIndex)} color="error">
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    </ListItem>
+                  </React.Fragment>
+                ))}
+              </List>
+            </Box>
+          ))}
         </Box>
       ))}
 
 
-
-<Typography variant="h6" sx={{ marginTop: 2 }}>
-  Total Expenses: 
-  <Box
-    component="span"
-    sx={{
-      backgroundColor: 'blue',
-      color: 'white',
-      fontWeight: 'bold',
-      padding: '4px 8px',
-      borderRadius: '4px',
-      display: 'inline-block',
-      marginLeft: 1,
-      fontSize: '1.25rem',
-      letterSpacing: '0.5px',
-      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
-    }}
-  >
-    ₹{total}
-  </Box>
-</Typography>
-
-    </Box>
-
+      <Typography variant="h6" sx={{ marginTop: 2 }}>
+        Total Expenses:
+        <Box
+          component="span"
+          sx={{
+            backgroundColor: 'blue',
+            color: 'white',
+            fontWeight: 'bold',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            display: 'inline-block',
+            marginLeft: 1,
+            fontSize: '1.25rem',
+            letterSpacing: '0.5px',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
+          }} >
+          ₹{total}
+        </Box>
+      </Typography>
+    </Box >
   );
 };
 
