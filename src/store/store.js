@@ -4,6 +4,8 @@ import expenseReducer from './features/expenseSlice';
 import employeeReducer from './features/employeeSlice';
 import employeeAllocationReducer from './features/employeeAllocationSlice';
 import searchReducer from './features/searchSlice';
+import chartReducer from './features/chartSlice';
+
 
 // redux persist
 import { persistReducer, persistStore } from 'redux-persist';
@@ -23,6 +25,7 @@ const store = configureStore({
     employees: employeeReducer,
     employeeAllocation: employeeAllocationReducer,
     search: searchReducer,
+    charts : chartReducer,
   },
   // Add serializableCheck middleware to allow non-serializable values
   middleware: (getDefaultMiddleware) =>

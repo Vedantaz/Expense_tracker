@@ -155,7 +155,7 @@ const Expenses = () => {
     backgroundColor: '#f44336',
     width: '100%',               
     padding: '8px',        
-    boxSizing: 'border-box', borderRadius: '8px',  
+    boxSizing: 'border-box', borderRadius: '8px',  color:'white'
   }}>
             {format(new Date(groupDate), 'dd MMM, yyyy')}
           </Typography>
@@ -164,13 +164,12 @@ const Expenses = () => {
           {Object.keys(groupedExpenses[groupDate]).map((category) => (
             <Box key={category} sx={{ marginBottom: 2 }}>
               <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                {category}
+                {category} 
               </Typography>
               <List>
                 {groupedExpenses[groupDate][category].map((expense) => (
                   <React.Fragment key={expense.originalIndex}>
                     {editIndex === expense.originalIndex && (
-
 
                       // edit box
                       <Box sx={{ marginBottom: 2, padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
@@ -208,12 +207,13 @@ const Expenses = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: 2,
-                      border: '2px solid #ddd', 
+                      margin:1,
+                      border: '2px solid #ddd', borderRadius: '8px'
                     }}>
                       {/* Category Column */}
                       <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
                         <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
-                          {expense.category}
+                          {expense.category} 
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'gray' }}>
                           (Last updated : {format(new Date(expense.date), 'dd MMM, yyyy')})

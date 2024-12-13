@@ -6,8 +6,8 @@ import Expenses from './components/organisms/Expenses';
 import EmployeeTable from './components/organisms/EmployeeTable';
 import { EmployeeAllocationChart } from './components/organisms/employeeAllocation';
 import Navbar from './components/organisms/navbar';
+import CategoryChart from './components/organisms/categoryChart';
 import './App.css'
-
 function App() {
 
   return (
@@ -28,6 +28,7 @@ function App() {
           <Route path="/" element={<Expenses />} />
           <Route path="/employee-table" element={<EmployeeTable />} />
           <Route path="/employee-allocation-chart" element={<EmployeeAllocationChart />} />
+          <Route path="/categories" element={<CategoryChart/>} />
         </Routes>
       </Box>
     </Router>

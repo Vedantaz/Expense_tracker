@@ -32,8 +32,6 @@ const expenseSlice = createSlice({
 
           const {name,amount, date, category} = action.payload;
           
-          // const calculatedRatio = ratio || (amountMax ? (parseFloat(amount) / parseFloat(amountMax)) * 100 : 0);
-
             const newExpense = {
               name,
               amount,

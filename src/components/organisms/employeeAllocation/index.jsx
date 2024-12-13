@@ -3,16 +3,21 @@ import { Box } from '@mui/material';
 import { Select } from '../../atoms/selectField';
 import { rows } from '../../../data/data';
 import { PieChart } from '@mui/x-charts';
+import { addExpense, setBudget } from '../../../store/features/chartSlice';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 export const EmployeeAllocationChart = () => {
   const [selectedUser, setSelectedUser] = useState('');
   const [userProjectData, setUserProjectData] = useState([]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     if (rows.length > 0) {
       const defaultUser = rows[0].name;
       // setSelectedUser(defaultUser);
       // setProjectData(defaultUser);
+
+      dispatch(setBudget(5000));
     }
   }, [rows]);
 
@@ -55,8 +60,7 @@ export const EmployeeAllocationChart = () => {
   return (
     <Box>
       <Select value={selectedUser} onChange={handleUserChange} label="Select Employee" options={rows.map((row) => row.name)} />
-      
-      
+
       {pieChartData.data.length > 0 ? (
         <PieChart
           series={[

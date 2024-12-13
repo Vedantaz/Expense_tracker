@@ -55,6 +55,9 @@ const Navbar = () => {
                     <Button color="inherit" component={Link} to="/employee-allocation-chart" sx={buttonStyles}>
                         Chart
                     </Button>
+                    <Button color="inherit" component={Link} to="/categories" sx={buttonStyles}>
+                        Category
+                    </Button>
                 </Box>
             </Toolbar>
         </AppBar >

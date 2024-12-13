@@ -5,16 +5,13 @@ import { setSearchQuery, selectFilteredExpenses, selectFilteredUsers } from '../
 const Search = () => {
     const dispatch = useDispatch();
     const filteredExpenses = useSelector(selectFilteredExpenses);
-
     const searchQuery = useSelector((state) => state.search.searchQuery);
     const filteredUsers = useSelector(selectFilteredUsers);
-
     const [localQuery, setLocalQuery] = useState("");
 
     const handleInputChange = (event) => {
         setLocalQuery(event.target.value);
     };
-
     const handleKeyDown = (event) => {
         if (event.key == "Enter") {
             dispatch(setSearchQuery(localQuery));
@@ -33,7 +30,6 @@ const Search = () => {
             </div>
             <div>
                 <ul>
-
                     {localQuery ? ( 
                         filteredExpenses.length > 0 ? (
 
