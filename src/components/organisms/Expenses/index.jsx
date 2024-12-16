@@ -146,25 +146,34 @@ const Expenses = () => {
         Add Expense
       </Button>
 
-      {/* existing code  */}
-
       {Object.keys(groupedExpenses).map((groupDate) => (
         <Box key={groupDate} sx={{ marginBottom: 2 }}>
-          <Typography variant="h6" sx={{ 
-    marginBottom: 1, 
-    backgroundColor: '#f44336',
-    width: '100%',               
-    padding: '8px',        
-    boxSizing: 'border-box', borderRadius: '8px',  color:'white'
-  }}>
+          <Typography variant="h6" sx={{
+            marginBottom: 1,
+            backgroundColor: '#f44336',
+            width: '100%',
+            padding: '8px',
+            boxSizing: 'border-box', borderRadius: '8px', color: 'white', textAlign: 'center'
+          }}>
             {format(new Date(groupDate), 'dd MMM, yyyy')}
           </Typography>
 
           {/* Iterate over categories within each date group */}
           {Object.keys(groupedExpenses[groupDate]).map((category) => (
             <Box key={category} sx={{ marginBottom: 2 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                {category} 
+              <Typography variant="body1" sx={{
+                fontWeight: 'bold', marginBottom: 1,
+                marginRight: 2,
+                backgroundColor: 'white',
+                color: 'black',
+                width: '100%',
+                padding: '8px',
+                borderRadius: '8px',
+                boxSizing: 'border-box',
+                textAlign: 'center',
+                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+              }}>
+                {category}
               </Typography>
               <List>
                 {groupedExpenses[groupDate][category].map((expense) => (
@@ -207,13 +216,13 @@ const Expenses = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: 2,
-                      margin:1,
+                      margin: 1,
                       border: '2px solid #ddd', borderRadius: '8px'
                     }}>
                       {/* Category Column */}
                       <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
                         <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
-                          {expense.category} 
+                          {expense.category}
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'gray' }}>
                           (Last updated : {format(new Date(expense.date), 'dd MMM, yyyy')})
@@ -221,7 +230,7 @@ const Expenses = () => {
                       </Box>
 
                       {/* Value Column */}
-                      <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column'}}>
+                      <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
                         <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
                           {expense.name}
                         </Typography>
@@ -251,7 +260,7 @@ const Expenses = () => {
 
       <Typography variant="h6" sx={{ marginTop: 2 }}>
         Total Expenses:
-        <Box
+        {/* <Box
           component="span"
           sx={{
             backgroundColor: 'blue',
@@ -265,8 +274,39 @@ const Expenses = () => {
             letterSpacing: '0.5px',
             boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
           }} >
-          ₹{total}
+          ₹{total} / ₹5000 
+        </Box> */}
+
+
+        <Box
+          component="span"
+          sx={{
+            backgroundColor: '#007FFF',
+            color: 'white',
+            fontWeight: 'bold',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            display: 'inline-block',
+            marginLeft: 1,
+            fontSize: '1.25rem',
+            letterSpacing: '0.5px',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
+          }}
+        >
+          <Box
+            component="span"
+            sx={{
+              color: 'red',
+              fontSize: '1.5rem',
+              fontWeight: 'bolder',
+              marginRight: '4px',
+            }}
+          >
+            ₹{total}
+          </Box>
+          / ₹5000
         </Box>
+
       </Typography>
     </Box >
   );

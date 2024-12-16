@@ -66,7 +66,6 @@ const expenseSlice = createSlice({
             const {index, updatedExpense, operation, amountMax} = action.payload; 
             const currentExpense = state.expenses[index];
             let diff = 0;
-
             switch (operation) {
                 case 'add':
                     diff = updatedExpense.amount - currentExpense.amount;
@@ -89,7 +88,6 @@ const expenseSlice = createSlice({
               // const recalculatedRatio = amountMax ? (updatedExpense.amount / amountMax) * 100 : 0;
             state.expenses[index] = {...updatedExpense};
             state.total = totalE(state.expenses);
-
         },
         calculateTotal : (state) =>{
             state.total = totalE(state.expenses);
