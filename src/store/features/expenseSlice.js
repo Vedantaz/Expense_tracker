@@ -22,6 +22,7 @@ const loadExpenses = () => {
 const initialState = {
     expenses : loadExpenses(),
     total:totalE(loadExpenses()),
+    isImp : false,
 }
 
 const expenseSlice = createSlice({
@@ -39,7 +40,11 @@ const expenseSlice = createSlice({
               category : category || 'Uncategorized',
             };
       
-            const existingExpense = state.expenses.find(expense => expense.name === name);
+            const existingExpense = state.expenses.find(expense => expense.name === name
+                && expense.date.split('T')[0] === date 
+                && expense.category === category
+
+            );
 
             if(existingExpense){
                 existingExpense.amount += amount;
@@ -91,9 +96,17 @@ const expenseSlice = createSlice({
         },
         calculateTotal : (state) =>{
             state.total = totalE(state.expenses);
+        },
+        markImp : (state, action)=>{
+          const {expenseId} = action.payload;
+          const expense = state.expenses.find((exp) => exp.originalIndex === expenseId);
+          if(expense){
+            expense.isImp = !expense.isImp;
+
+          }
         }
     }
 });
 
-export const {calculateTotal, updateExpense, addExpense, removeExpense} = expenseSlice.actions;
+export const {calculateTotal, updateExpense, addExpense, removeExpense, markImp} = expenseSlice.actions;
 export default expenseSlice.reducer;

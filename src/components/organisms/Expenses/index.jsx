@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addExpense, removeExpense, updateExpense } from '../../../store/features/expenseSlice';
+import { addExpense, removeExpense, updateExpense, markImp } from '../../../store/features/expenseSlice';
 import Search from '../search'
 import { TextField, Button, Box, List, ListItem, ListItemText, IconButton, Stack, Typography, FormControl, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
 import { format } from 'date-fns';
 
 const Expenses = () => {
@@ -20,9 +21,10 @@ const Expenses = () => {
   const [editExpenseName, setEditExpenseName] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [category, setCategory] = useState('');
-  const [amountMin, setAmountMin] = useState('');
-  const [amountMax, setAmountMax] = useState('');
 
+  const handleImpToggle = (expenseId) => {
+    dispatch(markImp({expenseId}));
+  }
   const handleAddExpense = () => {
 
     if (!expenseName || !amount || !category) {
@@ -31,8 +33,9 @@ const Expenses = () => {
     }
     const currentDate = new Date().toISOString();
 
-    // const ratio = (parseFloat(amount) / parseFloat(amountMax)) * 100;
-    dispatch(addExpense({ name: expenseName, amount: parseFloat(amount), date: currentDate, category }));
+    const formattedDate = format(currentDate, 'yyyy-MM-dd');
+
+    dispatch(addExpense({ name: expenseName, amount: parseFloat(amount), date: formattedDate, category }));
     setExpenseName('');
     setAmount('');
     setCategory('');
@@ -76,11 +79,11 @@ const Expenses = () => {
   // grouping date wise expenses
   const groupExpenses = (expenses) => {
     return expenses.reduce((acc, expense, originalIndex) => {
-      const formattedDate = format(new Date(expense.date), 'dd MMM, yyyy');
+      const formattedDate = format(new Date(expense.date), 'yyyy-MM-dd');
 
       // grouping by date
       if (!acc[formattedDate]) {
-        acc[formattedDate] = [];
+        acc[formattedDate] = {};
       }
 
       // Group by category within each date group
@@ -88,19 +91,14 @@ const Expenses = () => {
         acc[formattedDate][expense.category] = [];
       }
 
-      acc[formattedDate][expense.category].push({ ...expense, originalIndex });  // this is done to task reference to original Index of expenses array  alogn with categorizing acc to the each date.
-      // acc[formattedDate].push({ ...expense, originalIndex });      
+      acc[formattedDate][expense.category].push({ ...expense, originalIndex });  // this is done to task reference to original Index of expenses array  along with categorizing acc to the each date.
+
       return acc;
     }, {});
   }
 
   const groupedExpenses = groupExpenses(expenses);
 
-  const filterExpenses = expenses.filter(expense => {
-    const withinAmount = ((!amountMin || expense.amount >= amountMin) && (!amountMax || expense.amount <= amountMax));
-    const matchCategory = !category || expense.category === category;
-    return withinAmount && matchCategory;
-  })
 
   return (
     <Box sx={{ padding: 2 }}>
@@ -155,7 +153,7 @@ const Expenses = () => {
             padding: '8px',
             boxSizing: 'border-box', borderRadius: '8px', color: 'white', textAlign: 'center'
           }}>
-            {format(new Date(groupDate), 'dd MMM, yyyy')}
+            {format(new Date(groupDate), 'yyyy-MM-dd')}
           </Typography>
 
           {/* Iterate over categories within each date group */}
@@ -177,7 +175,7 @@ const Expenses = () => {
               </Typography>
               <List>
                 {groupedExpenses[groupDate][category].map((expense) => (
-                  <React.Fragment key={expense.originalIndex}>
+                  <React.Fragment key={`${expense.name}-${expense.date}-${expense.category}-${expense.originalIndex}`}>
                     {editIndex === expense.originalIndex && (
 
                       // edit box
@@ -200,7 +198,7 @@ const Expenses = () => {
                         <TextField
                           label="Edit Date"
                           type="date"
-                          value={format(date, 'yyyy-MM-dd')}
+                          value={editIndex !== null ? format(date, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
                           onChange={(e) => setDate(new Date(e.target.value))}
                           fullWidth
                           sx={{ marginBottom: 1 }}
@@ -222,18 +220,18 @@ const Expenses = () => {
                       {/* Category Column */}
                       <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
                         <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
-                          {expense.category}
+                          {expense.name}
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'gray' }}>
-                          (Last updated : {format(new Date(expense.date), 'dd MMM, yyyy')})
+                          (Last updated : {format(new Date(expense.date), 'yyyy-MM-dd')})
                         </Typography>
                       </Box>
 
                       {/* Value Column */}
                       <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
-                        <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
+                        {/* <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
                           {expense.name}
-                        </Typography>
+                        </Typography> */}
                         <Typography variant="body2" sx={{ color: 'gray' }}>
                           ₹{expense.amount}
                         </Typography>
@@ -247,6 +245,12 @@ const Expenses = () => {
                         <IconButton onClick={() => handleRemoveExpense(expense.originalIndex)} color="error">
                           <DeleteIcon />
                         </IconButton>
+                        <IconButton
+                          onClick={() => handleImpToggle(expense.originalIndex)} // Handle toggle
+                          color={expense.markImp ? "warning" : "default"}
+                        >
+                          <StarIcon />
+                        </IconButton>
                       </Box>
                     </ListItem>
                   </React.Fragment>
@@ -257,26 +261,8 @@ const Expenses = () => {
         </Box>
       ))}
 
-
       <Typography variant="h6" sx={{ marginTop: 2 }}>
         Total Expenses:
-        {/* <Box
-          component="span"
-          sx={{
-            backgroundColor: 'blue',
-            color: 'white',
-            fontWeight: 'bold',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            display: 'inline-block',
-            marginLeft: 1,
-            fontSize: '1.25rem',
-            letterSpacing: '0.5px',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.15)',
-          }} >
-          ₹{total} / ₹5000 
-        </Box> */}
-
 
         <Box
           component="span"

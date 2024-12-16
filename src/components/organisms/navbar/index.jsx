@@ -36,7 +36,7 @@ const Navbar = () => {
                     justifyContent: 'flex-start',
                     display: 'flex',
                 }}>
-                    Employee Dashboard
+                    Dashboard
                 </Typography>
                 <Box
                     sx={{

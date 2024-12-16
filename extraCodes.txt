@@ -328,8 +328,6 @@ export default Expenses;
 
 
 
-
-
 //expenses main logic 
 
   {Object.keys(groupedExpenses).map((groupDate) => (
@@ -409,5 +407,104 @@ export default Expenses;
               </React.Fragment>
             ))}
           </List>
+        </Box>
+      ))}
+
+
+
+
+
+      /// 
+
+     
+      {Object.keys(groupedExpenses).map((groupDate) => (
+        <Box key={groupDate} sx={{ marginBottom: 2 }}>
+          <Typography variant="h6" sx={{
+            marginBottom: 1,
+            backgroundColor: '#f44336',
+            width: '100%',
+            padding: '8px',
+            boxSizing: 'border-box', borderRadius: '8px', color: 'white', textAlign: 'center'
+          }}>
+            {format(new Date(groupDate), 'dd MMM, yyyy')}
+          </Typography>
+
+          {/* Iterate over categories within each date group */}
+          {Object.keys(groupedExpenses[groupDate]).map((category) => (
+            <Box key={category} sx={{ marginBottom: 2 }}>
+              <Typography variant="body1" sx={{
+                fontWeight: 'bold', marginBottom: 1,
+                marginRight: 2,
+                backgroundColor: 'white',
+                color: 'black',
+                width: '100%',
+                padding: '8px',
+                borderRadius: '8px',
+                boxSizing: 'border-box',
+                textAlign: 'center',
+                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+              }}>
+                {category}
+              </Typography>
+
+              {/* Iterate over names within each category */}
+
+              {Object.keys(groupedExpenses[groupDate][category]).map((name) => (
+                <Box key={name} sx={{ marginBottom: 2 }}>
+
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
+                    {name}
+                  </Typography>
+
+                  <List>
+                {/* Map through the array of expenses for each name */}
+                {groupedExpenses[groupDate][category][name].map((expense) => (
+                  <ListItem
+                    key={expense.originalIndex}
+                    sx={{
+                      display: 'flex',  
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: 2,
+                      margin: 1,
+                      border: '2px solid #ddd', borderRadius: '8px'
+                    }}
+                  >
+                    {/* Category Column */}
+                    <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
+                      <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
+                        {expense.category}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'gray' }}>
+                        (Last updated : {format(new Date(expense.date), 'dd MMM, yyyy')})
+                      </Typography>
+                    </Box>
+
+                    {/* Value Column */}
+                    <Box sx={{ flex: 1, display: 'flex', alignItems: 'left', flexDirection: 'column' }}>
+                      <Typography variant="body1" sx={{ fontWeight: 'bold', marginRight: 2 }}>
+                        {expense.name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'gray' }}>
+                        ₹{expense.amount}
+                      </Typography>
+                    </Box>  
+
+                    {/* Action Buttons Column */}
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <IconButton onClick={() => handleEditExpense(expense.originalIndex)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleRemoveExpense(expense.originalIndex)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </ListItem>
+                ))}
+              </List>
+                </Box>
+              ))}
+            </Box>
+          ))}
         </Box>
       ))}
