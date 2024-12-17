@@ -23,6 +23,7 @@ const initialState = {
     expenses : loadExpenses(),
     total:totalE(loadExpenses()),
     isImp : false,
+    originalIndex: 0,
 }
 
 const expenseSlice = createSlice({
@@ -38,6 +39,8 @@ const expenseSlice = createSlice({
               amount,
               date: date || new Date().toISOString(),
               category : category || 'Uncategorized',
+              isImp:false,   // initialize it
+              originalIndex: state.expenses.length, 
             };
       
             const existingExpense = state.expenses.find(expense => expense.name === name
@@ -99,9 +102,13 @@ const expenseSlice = createSlice({
         },
         markImp : (state, action)=>{
           const {expenseId} = action.payload;
-          const expense = state.expenses.find((exp) => exp.originalIndex === expenseId);
-          if(expense){
-            expense.isImp = !expense.isImp;
+
+          if(expenseId === undefined || expenseId === null) return;
+
+          if(state.expenses[expenseId]){
+
+            // expense.isImp = !expense.isImp;
+            state.expenses[expenseId].isImp = !state.expenses[expenseId].isImp;
 
           }
         }

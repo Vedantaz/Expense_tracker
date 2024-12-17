@@ -30,7 +30,6 @@ const Search = () => {
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     sx={{
-                        marginRight: 2,
                         backgroundColor: 'white',
                         borderRadius: 1,
                         boxShadow: 2,
