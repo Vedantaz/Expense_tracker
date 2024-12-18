@@ -7,7 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import { format } from 'date-fns';
-
+import { groupExpensesByMonth, groupExpensesByWeek, groupExpensesByYear, calculateTotal } from '../../../store/utils/expenseUtils';
+import ExpenseSummary from '../expenseSummary';
 const Expenses = () => {
 
   const dispatch = useDispatch();
@@ -24,7 +25,6 @@ const Expenses = () => {
 
   const handleImpToggle = (expenseId) => {
     dispatch(markImp({ expenseId }));
-    // console.log(expenseId);
   }
   const handleAddExpense = () => {
 
@@ -77,17 +77,14 @@ const Expenses = () => {
     }
   };
 
-  // grouping date wise expenses
   const groupExpenses = (expenses) => {
     return expenses.reduce((acc, expense, originalIndex) => {
       const formattedDate = format(new Date(expense.date), 'yyyy-MM-dd');
 
-      // grouping by date
       if (!acc[formattedDate]) {
         acc[formattedDate] = {};
       }
 
-      // Group by category within each date group
       if (!acc[formattedDate][expense.category]) {
         acc[formattedDate][expense.category] = [];
       }
@@ -100,9 +97,8 @@ const Expenses = () => {
 
   const groupedExpenses = groupExpenses(expenses);
 
-  // calculating the total of expenses for the current groupDate
   const totalExpense = Object.keys(groupedExpenses).map((groupDate) => {
-    // Calculate the total for each date
+
     const groupTotal = Object.values(groupedExpenses[groupDate])
       .flat()
       .reduce((sum, expense) => sum + expense.amount, 0);
@@ -112,6 +108,8 @@ const Expenses = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
+
+
       <Box sx={{backgroundColor:'lightgoldenrodyellow', padding:4, boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',borderRadius: '8px', marginBottom:2}}>
         <Typography variant="h4" gutterBottom>
           Daily Expenses (Kharcha)
@@ -172,7 +170,8 @@ const Expenses = () => {
         </FormControl>
       </Box>
 
-
+      {/* After this box, the expenseSummary will be shown */}
+      <ExpenseSummary expenses={expenses} />
 
       {Object.keys(groupedExpenses).map((groupDate) => {
         // Calculate the total expense for the current group date
@@ -195,6 +194,9 @@ const Expenses = () => {
                 color: 'white',
                 textAlign: 'center',
                 fontWeight: 'bold',
+                display:'flex',
+                justifyContent:'space-between',
+                alignItems:'center'
               }}
             >
               {format(new Date(groupDate), 'dd MMM, yyyy')}
