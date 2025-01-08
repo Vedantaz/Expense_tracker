@@ -2,13 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addExpense, removeExpense, updateExpense, markImp } from '../../../store/features/expenseSlice';
 import Search from '../search'
-import { TextField, Button, Box, List, ListItem, ListItemText, IconButton, Stack, Typography, FormControl, FormControlLabel, RadioGroup, Radio } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Box, List, ListItem, ListItemText, IconButton, Stack, Typography, FormControl, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import { format } from 'date-fns';
-import { groupExpensesByMonth, groupExpensesByWeek, groupExpensesByYear, calculateTotal } from '../../../store/utils/expenseUtils';
 import ExpenseSummary from '../expenseSummary';
+import AddIcon from "@mui/icons-material/Add";
+import { groupExpensesByMonth, groupExpensesByWeek, groupExpensesByYear, calculateTotal } from '../../../store/utils/expenseUtils';
+import categoryGroup from '../../molecules/categoryGroup';
+import expenseDialog from '../../molecules/expenseDialog';
+
 const Expenses = () => {
 
   const dispatch = useDispatch();
@@ -23,13 +27,46 @@ const Expenses = () => {
   const [editAmount, setEditAmount] = useState('');
   const [category, setCategory] = useState('');
 
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [dialogClose, setDialogClose] = useState(false);
+
+  const handleDialogOpen = (category, date) => {
+    setCategory(category);
+    setDate(date);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setExpenseName('');
+    setAmount('');
+    setCategory('');
+  };
+
+  const handleAddExpenseFromDialog = () => {
+    if (!expenseName || !amount || !category) {
+      alert('Please fill all fields!');
+      return;
+    }
+
+    const formattedDate = format(new Date(date), 'dd MMM, yyyy');
+    dispatch(
+      addExpense({
+        name: expenseName,
+        amount: parseFloat(amount),
+        date: formattedDate,
+        category,
+      })
+    );
+  };
+
   const handleImpToggle = (expenseId) => {
     dispatch(markImp({ expenseId }));
   }
   const handleAddExpense = () => {
 
     if (!expenseName || !amount || !category) {
-      alert('Please fill all fields including Max Amount!');
+      alert('Please fill all fields!');
       return;
     }
     const currentDate = new Date().toISOString();
@@ -40,6 +77,7 @@ const Expenses = () => {
     setExpenseName('');
     setAmount('');
     setCategory('');
+    setDialogClose();
 
   };
 
@@ -107,10 +145,17 @@ const Expenses = () => {
   });
 
   return (
-    <Box sx={{ padding: 2 }}>
+    <Box sx={{ padding: 2, width: '100%' }}>
 
+      {/* <categoryGroup
+        expenseName={expenseName}
+        setName={(e) => setExpenseName(e.target.value)}
+        amount={amount} setAmt={(e) => setAmount(e.target.value)}
+        category={category}
+        setCat={(e) => setCategory(e.target.value)}
+        handleadd={handleAddExpense} /> */}
 
-      <Box sx={{backgroundColor:'lightgoldenrodyellow', padding:4, boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',borderRadius: '8px', marginBottom:2}}>
+      <Box sx={{ backgroundColor: 'lightgoldenrodyellow', padding: 4, boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', borderRadius: '8px', marginBottom: 2 }}>
         <Typography variant="h4" gutterBottom>
           Daily Expenses (Kharcha)
         </Typography>
@@ -131,57 +176,54 @@ const Expenses = () => {
           sx={{ marginBottom: 1 }}
         />
 
-        {/*  formControl radio buttons and add btn */}
-        <FormControl component="fieldset" fullWidth sx={{
-          marginBottom: 1,
-          // display: 'flex',
-          alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between',
-          width: '100%', flexGrow: '1'
-        }}>
-          <RadioGroup
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            row
-            sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              flexGrow: 1,
-            }}
-          >
-            <FormControlLabel value="Food" control={<Radio />} label="Food" />
-            <FormControlLabel value="Travel" control={<Radio />} label="Travel" />
-            <FormControlLabel value="Casual" control={<Radio />} label="Casual" />
-            <FormControlLabel value="Medicine" control={<Radio />} label="Medicine" />
-          </RadioGroup>
-
-          {/* Button aligned to the right */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddExpense}
-              sx={{ padding: '8px 16px', fontWeight: 'bold' }}
+          <FormControl component="fieldset" fullWidth sx={{
+            marginBottom: 1,
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between', flexGrow: '1'
+          }}>
+            <RadioGroup
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              row
+              sx={{
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                flexGrow: 1,
+              }}
             >
-              Add
-            </Button>
-          </Box>
-        </FormControl>
+              <FormControlLabel value="Food" control={<Radio />} label="Food" />
+              <FormControlLabel value="Travel" control={<Radio />} label="Travel" />
+              <FormControlLabel value="Casual" control={<Radio />} label="Casual" />
+              <FormControlLabel value="Medicine" control={<Radio />} label="Medicine" />
+            </RadioGroup>
+
+            <Box sx={{ justifyContent: 'center', alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddExpenseFromDialog}
+                sx={{ padding: '8px 16px', fontWeight: 'bold' }}
+              >
+                Add
+              </Button>
+            </Box>
+          </FormControl>
+
       </Box>
 
-      {/* After this box, the expenseSummary will be shown */}
       <ExpenseSummary expenses={expenses} />
 
       {Object.keys(groupedExpenses).map((groupDate) => {
-        // Calculate the total expense for the current group date
+
         const groupTotal = Object.values(groupedExpenses[groupDate])
           .flat()
           .reduce((sum, expense) => sum + expense.amount, 0);
 
         return (
           <Box key={groupDate} sx={{ marginBottom: 2 }}>
-            {/* Display the group date and total expense */}
+
             <Typography
               variant="h6"
               sx={{
@@ -194,9 +236,9 @@ const Expenses = () => {
                 color: 'white',
                 textAlign: 'center',
                 fontWeight: 'bold',
-                display:'flex',
-                justifyContent:'space-between',
-                alignItems:'center'
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}
             >
               {format(new Date(groupDate), 'dd MMM, yyyy')}
@@ -218,7 +260,6 @@ const Expenses = () => {
               </Box>
             </Typography>
 
-            {/* Iterate over categories within each date group */}
             {Object.keys(groupedExpenses[groupDate]).map((category) => (
               <Box key={category} sx={{ marginBottom: 2 }}>
                 <Typography
@@ -238,7 +279,70 @@ const Expenses = () => {
                   }}
                 >
                   {category}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    sx={{ marginLeft: 2 }}
+                    onClick={() => handleDialogOpen()}
+                  >
+                    <AddIcon />
+                  </Button>
+                  <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+                    <DialogTitle>Add Expense</DialogTitle>
+                    <DialogContent>
+                      <TextField
+                        label="Expense Name"
+                        value={expenseName}
+                        onChange={(e) => setExpenseName(e.target.value)}
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                      />
+                      <TextField
+                        label="Amount"
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                      />
+
+                      <TextField
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                      />
+                      <RadioGroup
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        row
+                        sx={{
+                          width: '100%',
+                          alignItems: 'center',
+                          justifyContent: 'flex-start',
+                          flexGrow: 1,
+                        }}
+                      >
+                        <FormControlLabel value="Food" control={<Radio />} label="Food" />
+                        <FormControlLabel value="Travel" control={<Radio />} label="Travel" />
+                        <FormControlLabel value="Casual" control={<Radio />} label="Casual" />
+                        <FormControlLabel value="Medicine" control={<Radio />} label="Medicine" />
+                      </RadioGroup>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleDialogClose} color="secondary">
+                        Cancel
+                      </Button>
+                      <Button onClick={handleAddExpense} color="primary">
+                        <AddIcon />
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                 </Typography>
+
+                {/* dynamic list */}
                 <List>
                   {groupedExpenses[groupDate][category].map((expense) => (
                     <React.Fragment key={`${expense.name}-${expense.date}-${expense.category}-${expense.originalIndex}`}>
