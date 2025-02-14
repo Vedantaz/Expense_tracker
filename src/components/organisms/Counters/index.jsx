@@ -32,7 +32,6 @@ const Counters = () => {
         }
     };
 
-
     return (
         <>
             <Box
