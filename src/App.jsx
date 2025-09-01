@@ -23,9 +23,7 @@ function App() {
         }}
       >
         <Routes>
-          <Route path="/" element={<Expenses />} />
-          {/* <Route path="/employee-table" element={<EmployeeTable />} /> */}
-          {/* <Route path="/employee-allocation-chart" element={<EmployeeAllocationChart />} /> */}
+          <Route path="/Expense_tracker" element={<Expenses />} />
           <Route path="/categories" element={<CategoryChart />} />
         </Routes>
       </Box>

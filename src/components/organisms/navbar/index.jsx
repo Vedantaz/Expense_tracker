@@ -1,14 +1,11 @@
-import React from "react";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setSearchQuery } from "../../../store/features/searchSlice";
+import { Link, useLocation } from "react-router-dom";
 
-const getButtonStyles = () => ({
+const getButtonStyles = (isActive) => ({
   marginLeft: 1,
   marginRight: 1,
-  color: "white",
-  backgroundColor: "black",
+  color: isActive ? "#1e88e5" : "white",
+  backgroundColor: isActive ? "#ffffff" : "black",
   fontSize: "1rem",
   fontWeight: "500",
   textTransform: "capitalize",
@@ -23,6 +20,8 @@ const getButtonStyles = () => ({
 const buttonStyles = getButtonStyles();
 
 const Navbar = () => {
+  const location = useLocation();
+  const isActive = location.pathname === "/Expense_tracker";
   return (
     <AppBar position="static" sx={{ bgcolor: "#1976d2" }}>
       <Toolbar>
@@ -47,15 +46,14 @@ const Navbar = () => {
             gap: 2,
           }}
         >
-          <Button color="inherit" component={Link} to="/" sx={buttonStyles}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/Expense_tracker"
+            sx={getButtonStyles(isActive)}
+          >
             Expenses
           </Button>
-          {/* <Button color="inherit" component={Link} to="/employee-table" sx={buttonStyles}>
-                        Table
-                    </Button>
-                    <Button color="inherit" component={Link} to="/employee-allocation-chart" sx={buttonStyles}>
-                        Chart
-                    </Button> */}
           <Button
             color="inherit"
             component={Link}
