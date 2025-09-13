@@ -356,7 +356,7 @@ const Expenses = () => {
               variant="filled"
               sx={{ width: "100%" }}
             >
-              Expense added!
+              Expense added
             </Alert>
           </Snackbar>
         </FormControl>

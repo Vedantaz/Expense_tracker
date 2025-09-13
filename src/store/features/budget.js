@@ -1,5 +1,4 @@
-
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   expenses: [],
@@ -7,14 +6,11 @@ const initialState = {
   currentBudget: 5000, // Remaining budget
 };
 
-
-
-  
 const budgetManager = BudgetManager(initialState.totalBudget);
 
 const expenseReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'ADD_EXPENSE': {
+    case "ADD_EXPENSE": {
       const updatedBudget = budgetManager.addExpense(action.payload.amount);
       return {
         ...state,
@@ -23,13 +19,13 @@ const expenseReducer = (state = initialState, action) => {
       };
     }
 
-    case 'RESET_BUDGET': {
+    case "RESET_BUDGET": {
       const updatedBudget = budgetManager.resetBudget(action.payload);
       return {
         ...state,
         totalBudget: action.payload,
         currentBudget: updatedBudget,
-        expenses: [], // Optional: clear expenses on reset
+        expenses: [],
       };
     }
 
