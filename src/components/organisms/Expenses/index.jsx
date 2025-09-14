@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addExpense,
@@ -17,9 +17,7 @@ import {
   Box,
   List,
   ListItem,
-  ListItemText,
   IconButton,
-  Stack,
   Typography,
   FormControl,
   FormControlLabel,
@@ -57,12 +55,10 @@ const Expenses = () => {
   const [category, setCategory] = useState("");
 
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [dialogClose, setDialogClose] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleDialogOpen = (category, date) => {
-    setCategory(category);
-    setDate(date);
+    console.log(category);
     setDialogOpen(true);
   };
 
@@ -70,6 +66,7 @@ const Expenses = () => {
     setDialogOpen(false);
     setExpenseName("");
     setAmount("");
+    setDate("");
     setCategory("");
   };
 
@@ -85,14 +82,14 @@ const Expenses = () => {
         name: expenseName,
         amount: parseFloat(amount),
         date: formattedDate,
-        category,
+        category: category,
       })
     );
-    // Clear fields
+
     setExpenseName("");
     setAmount("");
+    setCategory("");
 
-    // Show success popup
     setOpenSnackbar(true);
   };
 
@@ -104,7 +101,8 @@ const Expenses = () => {
       alert("Please fill all fields!");
       return;
     }
-    const currentDate = new Date().toISOString();
+    const currentDate = new Date();
+    console.log(currentDate, currentDate.toISOString());
 
     const formattedDate = format(currentDate, "yyyy-MM-dd");
 
@@ -113,13 +111,13 @@ const Expenses = () => {
         name: expenseName,
         amount: parseFloat(amount),
         date: formattedDate,
-        category,
+        category: category,
       })
     );
     setExpenseName("");
     setAmount("");
     setCategory("");
-    setDialogClose();
+    handleDialogClose();
   };
 
   const handleRemoveExpense = (index) => {
@@ -185,10 +183,12 @@ const Expenses = () => {
       {/* <categoryGroup
         expenseName={expenseName}
         setName={(e) => setExpenseName(e.target.value)}
-        amount={amount} setAmt={(e) => setAmount(e.target.value)}
+        amount={amount}
+        setAmt={(e) => setAmount(e.target.value)}
         category={category}
         setCat={(e) => setCategory(e.target.value)}
-        handleadd={handleAddExpense} /> */}
+        handleadd={handleAddExpense}
+      /> */}
 
       <Box
         sx={{
@@ -343,7 +343,6 @@ const Expenses = () => {
             </Button>
           </Box>
 
-          {/* Snackbar Popup */}
           <Snackbar
             open={openSnackbar}
             autoHideDuration={3000}
@@ -416,7 +415,7 @@ const Expenses = () => {
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between", // title left, button right
+                    justifyContent: "space-between",
                     px: 2,
                     py: 1,
                     backgroundColor: "white",
@@ -467,6 +466,7 @@ const Expenses = () => {
                       fullWidth
                       sx={{ marginBottom: 2 }}
                     />
+                    {/* radios selection btns in the dialog box */}
                     <RadioGroup
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
@@ -509,6 +509,8 @@ const Expenses = () => {
                     </Button>
                   </DialogActions>
                 </Dialog>
+
+                {/* the expense details after the category wise data */}
 
                 <List sx={{ p: 0, m: 0 }}>
                   {groupedExpenses[groupDate][category].map((expense) => (
