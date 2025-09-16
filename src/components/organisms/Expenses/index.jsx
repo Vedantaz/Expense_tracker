@@ -29,7 +29,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import StarIcon from "@mui/icons-material/Star";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import ExpenseSummary from "../expenseSummary";
 import AddIcon from "@mui/icons-material/Add";
 import {
@@ -58,7 +58,6 @@ const Expenses = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleDialogOpen = (category, date) => {
-    console.log(category);
     setDialogOpen(true);
   };
 
@@ -117,6 +116,7 @@ const Expenses = () => {
     setExpenseName("");
     setAmount("");
     setCategory("");
+    setDate(new Date());
     handleDialogClose();
   };
 
@@ -180,16 +180,6 @@ const Expenses = () => {
 
   return (
     <Box sx={{ padding: 2, width: "100%" }}>
-      {/* <categoryGroup
-        expenseName={expenseName}
-        setName={(e) => setExpenseName(e.target.value)}
-        amount={amount}
-        setAmt={(e) => setAmount(e.target.value)}
-        category={category}
-        setCat={(e) => setCategory(e.target.value)}
-        handleadd={handleAddExpense}
-      /> */}
-
       <Box
         sx={{
           backgroundColor: "#008B8B",
@@ -211,15 +201,24 @@ const Expenses = () => {
           fullWidth
           sx={{
             marginBottom: 1,
+            "& label": {
+              color: "white", // label color when not focused
+            },
             "& label.Mui-focused": {
-              color: "white",
+              color: "white", // label color when focused
             },
             "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "white", // border when not focused
+              },
+              "&:hover fieldset": {
+                borderColor: "white", // border on hover
+              },
               "&.Mui-focused fieldset": {
-                borderColor: "white",
+                borderColor: "white", // border when focused
               },
               "& input": {
-                color: "white",
+                color: "white", // input text color
               },
             },
           }}
@@ -231,17 +230,63 @@ const Expenses = () => {
           onChange={(e) => setAmount(e.target.value)}
           fullWidth
           sx={{
+            "& label": {
+              color: "white", // label color when not focused
+            },
             marginBottom: 1,
             "& label.Mui-focused": {
               color: "white",
             },
+
             "& .MuiOutlinedInput-root": {
               "&.Mui-focused fieldset": {
                 borderColor: "white",
               },
+              "& fieldset": {
+                borderColor: "white", // border when not focused
+              },
+              "&:hover fieldset": {
+                borderColor: "white", // border on hover
+              },
               "& input": {
                 color: "white",
               },
+            },
+          }}
+        />
+        <TextField
+          label="Select Date"
+          type="date"
+          value={isValid(date) ? format(date, "yyyy-MM-dd") : ""}
+          onChange={(e) => {
+            const newDate = new Date(e.target.value);
+            if (isValid(newDate)) {
+              setDate(newDate);
+            } else {
+              setDate(newDate);
+            }
+          }}
+          fullWidth
+          sx={{
+            marginBottom: 1,
+            marginBottom: 1,
+            "& .MuiOutlinedInput-input": {
+              color: "white",
+            },
+            "& label": {
+              color: "white",
+            },
+            "& label.Mui-focused": {
+              color: "white",
+            },
+            "& .MuiOutlinedInput-root fieldset": {
+              borderColor: "white",
+            },
+            "& .MuiOutlinedInput-root:hover fieldset": {
+              borderColor: "white",
+            },
+            "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+              borderColor: "white",
             },
           }}
         />
@@ -461,8 +506,15 @@ const Expenses = () => {
 
                     <TextField
                       type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
+                      value={isValid(date) ? format(date, "yyyy-MM-dd") : ""}
+                      onChange={(e) => {
+                        const newDate = new Date(e.target.value);
+                        if (isValid(newDate)) {
+                          setDate(newDate);
+                        } else {
+                          setDate(newDate);
+                        }
+                      }}
                       fullWidth
                       sx={{ marginBottom: 2 }}
                     />
@@ -546,11 +598,18 @@ const Expenses = () => {
                             label="Edit Date"
                             type="date"
                             value={
-                              editIndex !== null
+                              editIndex !== null && isValid(date)
                                 ? format(date, "yyyy-MM-dd")
                                 : format(new Date(), "yyyy-MM-dd")
                             }
-                            onChange={(e) => setDate(new Date(e.target.value))}
+                            onChange={(e) => {
+                              const newDate = new Date(e.target.value);
+                              if (isValid(newDate)) {
+                                setDate(newDate);
+                              } else {
+                                setDate(newDate);
+                              }
+                            }}
                             fullWidth
                             sx={{ marginBottom: 1 }}
                           />

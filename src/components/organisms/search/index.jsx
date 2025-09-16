@@ -62,23 +62,17 @@ const Search = () => {
               <IconButton edge="start" sx={{ color: "gray" }}>
                 <SearchIcon />
               </IconButton>
-              //   <InputAdornment position="start">
-              //     <SearchIcon sx={{ color: "gray" }} />
-              //   </InputAdornment>
             ),
           }}
         />
       </Box>
 
       <Box sx={{ marginTop: 2 }}>
-        {/* Conditional rendering based on the search query */}
         {localQuery ? (
-          // Check if there are any filtered expenses
           filteredExpenses.length > 0 ? (
             <List>
               {filteredExpenses
                 .filter((expense) => {
-                  // Filter based on query and format
                   if (localQuery.trim().split(" ").length === 1) {
                     return expense.name
                       .toLowerCase()
@@ -96,6 +90,7 @@ const Search = () => {
                     <ListItemText
                       primary={expense.name}
                       secondary={`₹${expense.amount}`}
+                      secondaryTypographyProps={{ style: { color: "white" } }}
                     />
                   </ListItem>
                 ))}
